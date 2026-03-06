@@ -20,6 +20,9 @@ export class User {
   @Column({ select: false })
   passwordHash: string;
 
+  @Column({ type: 'varchar', nullable: true, select: false })
+  hashedRefreshToken: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

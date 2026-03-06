@@ -36,6 +36,24 @@ export class UserService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'name', 'email', 'passwordHash'], // explicitly select the hidden column
+    });
+  }
+
+  async findByIdWithRefreshToken(id: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'name', 'email', 'hashedRefreshToken'],
+    });
+  }
+
+  async updateRefreshToken(id: string, hashedRefreshToken: string | null): Promise<void> {
+    await this.userRepository.update({ id }, { hashedRefreshToken });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     const { password, ...rest } = updateUserDto;
