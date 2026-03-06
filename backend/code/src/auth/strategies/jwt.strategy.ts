@@ -5,8 +5,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 // Ideally, this secret should be in the .env file. We are hardcoding it for brevity, 
 // but in a production environment, you MUST use ConfigService.
 export const jwtConstants = {
-  secret: process.env.JWT_SECRET || 'super-secret-cat-dnd-key',
-  refreshSecret: process.env.JWT_REFRESH_SECRET || 'super-refresh-secret-dragon-key'
+  secret: process.env.JWT_SECRET as string,
+  refreshSecret: process.env.JWT_REFRESH_SECRET as string
 };
 
 @Injectable()

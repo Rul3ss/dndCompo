@@ -38,7 +38,7 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
     
     const refresh_token = this.jwtService.sign(payload, { 
-      secret: process.env.JWT_REFRESH_SECRET || 'super-refresh-secret-dragon-key', 
+      secret: process.env.JWT_REFRESH_SECRET as string, 
       expiresIn: '7d' 
     });
 
