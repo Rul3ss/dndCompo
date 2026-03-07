@@ -23,6 +23,15 @@ export class User {
   @Column({ type: 'varchar', nullable: true, select: false })
   hashedRefreshToken: string | null;
 
+  @Column({ nullable: true })
+  avatarUrl: string;
+
+  @Column({ type: 'text', nullable: true })
+  bio: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

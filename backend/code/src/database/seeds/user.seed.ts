@@ -11,12 +11,12 @@ async function seed() {
 
   const passwordHash1 = await bcrypt.hash('Senha@12223', 10);
   const passwordHash2 = await bcrypt.hash('Senha@12333', 10);
-  const passwordHash3 = await bcrypt.hash('Senha@12443', 10);
+  const passwordHash3 = await bcrypt.hash('lolpro23#', 10);
 
   const users = [
     { name: 'Alice Silva', email: 'alice@email.com', passwordHash: passwordHash1 },
     { name: 'Bruno Costa', email: 'bruno@email.com', passwordHash: passwordHash2 },
-    { name: 'Carla Mendes', email: 'carla@email.com', passwordHash: passwordHash3 },
+    { name: 'Carla Mendes', email: 'teste@email.com', passwordHash: passwordHash3 },
   ];
 
   for (const userData of users) {
