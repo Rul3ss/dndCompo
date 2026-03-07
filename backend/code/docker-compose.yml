@@ -1,4 +1,4 @@
-version: '3.8'
+name: 'dnd-backend'
 
 services:
   # ---- Banco de Dados PostgreSQL ----
@@ -30,6 +30,8 @@ services:
       target: production
     container_name: project-dnd
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-my_database}
       PORT: ${PORT:-3001}

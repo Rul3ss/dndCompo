@@ -48,9 +48,9 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "🌱 Rodando seeders..."
-# Rodando o arquivo de seed compilado
-docker compose exec backend node dist/database/seeds/user.seed.js
+echo "🌱 Rodando seeders unificados..."
+# Rodando o arquivo de seed unificado compilado (User + RPG)
+docker compose exec backend node dist/database/seeds/index.seed.js
 
 if [ $? -ne 0 ]; then
   echo "❌ Erro nos seeders"
