@@ -6,23 +6,23 @@
   --bg-dark: #0f1115;
   --bg-panel: #1a1d24;
   --bg-input: #0b0c10;
-  
+
   --primary-red: #d32f2f;
   --primary-red-hover: #b71c1c;
-  
+
   --text-main: #e0e0e0;
   --text-muted: #8a8d98;
   --text-white: #ffffff;
-  
+
   --border-color: #303642;
   --border-focus: #4b5563;
-  
+
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Cinzel', serif;
-  
+
   --radius-sm: 4px;
   --radius-md: 8px;
-  
+
   --transition: all 0.2s ease-in-out;
 }
 
@@ -312,4 +312,683 @@ body {
   max-width: 250px;
   margin: 0 auto;
   display: block;
+}
+
+/* --- D&D Beyond Inspired Layout --- */
+
+/* Navbar */
+.dnd-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1b1e;
+  padding: 0 2rem;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 2px solid #2a2d32;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.navbar-logo-img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  /* border-radius: 50%; Optional: helps hide square borders if logo is circular */
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin-left: 2rem;
+}
+
+.nav-links li a {
+  color: #b0b4b8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-links li a:hover:not(.disabled-link) {
+  color: #ffffff;
+}
+
+.disabled-link {
+  color: #6c707a !important;
+  cursor: not-allowed;
+}
+
+.soon-badge {
+  background-color: rgba(229, 57, 53, 0.15);
+  color: var(--primary-red);
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid rgba(229, 57, 53, 0.3);
+}
+
+.chevron {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #b0b4b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.icon-btn:hover {
+  color: #fff;
+}
+
+.nav-signin-btn {
+  background: none;
+  border: none;
+  color: #b0b4b8;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+
+.nav-signin-btn:hover {
+  color: #ffffff;
+}
+
+.nav-create-btn {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.nav-create-btn:hover {
+  background-color: #f44336;
+}
+
+.hide-desktop {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .hide-desktop {
+    display: flex !important;
+  }
+
+  /* Make sure the navbar gap is smaller on mobile to fit the 3 icons */
+  .navbar-right {
+    gap: 15px;
+  }
+}
+
+/* Mobile Sidebar Styles */
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-sidebar-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  /* Hidden off-screen right */
+  width: 300px;
+  height: 100vh;
+  background-color: #242933;
+  /* Darker grey as in screenshot */
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-sidebar.open {
+  right: 0;
+}
+
+@media (max-width: 400px) {
+  .mobile-sidebar {
+    width: 85vw;
+    /* Take up more space on super small phones */
+  }
+}
+
+.mobile-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.mobile-nav-links li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s;
+}
+
+.mobile-nav-links li a:hover:not(.disabled-link) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-chevron {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #b0b4b8;
+  border-bottom: 2px solid #b0b4b8;
+  transform: rotate(-45deg);
+  /* Pointing right */
+}
+
+.mobile-sidebar-footer {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #1a1e24;
+}
+
+.cta-mobile-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.cta-mobile-btn:hover {
+  color: #b0b4b8;
+}
+
+.signin-mobile-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  transition: background-color 0.2s;
+}
+
+.signin-mobile-btn:hover {
+  background-color: #f44336;
+}
+
+/* --- Animated Hero Section --- */
+.hero-section {
+  position: relative;
+  /* Use 100vh on root, discounting the navbar height if necessary but 
+     overflow hidden on root prevents scrolling issues if we use 100vh directly without borders */
+  height: calc(100vh - 64px);
+  width: 100%;
+  background-color: #080c11;
+  /* Deep space fallback */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  /* prevents any pseudo-elements from stretching page */
+}
+
+/* 
+  The new epic background image running on a separate layer 
+  so we can animate its scale independently of the text
+*/
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: -5%;
+  right: -5%;
+  bottom: 0;
+  /* Extra width to allow panning */
+  width: 110%;
+  /* Makes image larger than container */
+  background-image: url('/hero-cyberpunk.png');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  /* changed to a dynamic pan and zoom for more intense movement */
+  animation: dynamicPan 40s ease-in-out infinite alternate;
+}
+
+/* 
+  Let's add a subtle mist/particles effect using an overlay 
+  with radial gradients that also pan around very slowly, 
+  combined with a linear gradient to ensure text readability on the left.
+*/
+.hero-overlay {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(123, 31, 162, 0.15) 0%, transparent 30%),
+    /* This creates a vignette/shade to strictly protect left text, reduced for better image visibility */
+    linear-gradient(90deg, rgba(8, 12, 17, 0.8) 0%, rgba(8, 12, 17, 0.3) 40%, transparent 100%);
+  background-size: 100% 100%;
+  z-index: 1;
+  animation: mistDrift 30s linear infinite alternate;
+  pointer-events: none;
+  /* Let clicks pass through to content */
+}
+
+@keyframes dynamicPan {
+  0% {
+    transform: scale(1) translateX(0);
+  }
+
+  50% {
+    transform: scale(1.08) translateX(-2%);
+  }
+
+  100% {
+    transform: scale(1.03) translateX(2%);
+  }
+}
+
+@keyframes mistDrift {
+  0% {
+    transform: rotate(0deg) scale(1) translateX(0px);
+  }
+
+  50% {
+    transform: rotate(1deg) scale(1.02) translateX(-20px);
+  }
+
+  100% {
+    transform: rotate(-1deg) scale(1) translateX(20px);
+  }
+}
+
+/* Ensure content floats properly above the magic */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 650px;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Small adjustments for extreme mobile constraints of hero height */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 550px;
+    /* guarantees sufficient room for text on very small phones */
+    height: calc(100vh - 64px);
+  }
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  /* Usa clamp para responsividade: mínimo 2.5rem, cresce com a tela, max 4.5rem */
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.1;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hero-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.badge-red {
+  background-color: #ff0000;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+}
+
+.badge-text {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.hero-description {
+  color: #d1d5db;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  max-width: 550px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.hero-cta-btn {
+  align-self: flex-start;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 1.2rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+  box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+}
+
+.hero-cta-btn:hover {
+  background-color: #f44336;
+}
+
+.hero-cta-btn .arrow {
+  font-size: 1.3rem;
+  transition: transform 0.2s;
+}
+
+.hero-cta-btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* --- Auth Split Layout (D&D Beyond Style) --- */
+.split-auth-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-dark);
+  overflow: hidden;
+}
+
+.split-auth-left {
+  flex: 1.2;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .split-auth-left {
+    display: block;
+    height: 100%;
+  }
+}
+
+.split-auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Suavização (gradient) indo para a direita, para misturar a imagem com o fundo escuro */
+  background: linear-gradient(to right, rgba(15, 17, 21, 0) 0%, rgba(15, 17, 21, 0.4) 60%, var(--bg-dark) 100%);
+}
+
+.split-auth-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-dark);
+  position: relative;
+  overflow-y: auto;
+  /* Independent scrollbar for the right pane */
+  height: 100%;
+}
+
+/* Overrides for Auth Container inside Split Layout */
+.split-auth-right .auth-overlay {
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* Usando clamp: no mínimo 1rem de espaço, cresce conforme a altura da tela (5vh), no máximo 4rem */
+  padding: clamp(1rem, 5vh, 4rem) 2rem;
+}
+
+.split-auth-right .auth-container {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+  /* Removemos qualquer margem forçada do topo para encostar no topo certinho */
+  margin-top: 0;
+}
+
+/* Interactive Logo Styles */
+.clickable-logo {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.clickable-logo:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.auth-logo-img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Gradient Text Effect for D&D LORE */
+.gradient-text {
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #d32f2f 0%, #ff5252 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  margin: 0;
+  text-shadow: none;
+  /* Text shadow breaks background-clip */
+}
+
+/* --- Features Section (Hub) --- */
+.features-section {
+  padding: 6rem 2rem;
+  background-color: var(--bg-dark);
+  border-top: 1px solid var(--border-color);
+}
+
+.features-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.features-header h2 {
+  font-family: var(--font-serif);
+  font-size: 2.6rem;
+  color: var(--text-white);
+  margin-bottom: 1rem;
+}
+
+.features-header p {
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background-color: var(--bg-panel);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+  border-color: #4b5563;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  font-family: var(--font-sans);
+  color: var(--text-white);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* --- Footer CTA --- */
+.footer-cta-section {
+  padding: 6rem 2rem;
+  background: linear-gradient(to bottom, var(--bg-dark) 0%, #000000 100%);
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-cta-container h2 {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  color: var(--text-white);
+  margin-bottom: 1rem;
+}
+
+.footer-cta-container p {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.cta-large-btn {
+  font-size: 1.25rem;
+  padding: 1rem 3rem;
+  border-radius: var(--radius-sm);
 }

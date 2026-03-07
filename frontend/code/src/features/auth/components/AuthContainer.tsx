@@ -1,22 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
+import logoImg from '../../../assets/logo.png';
 
 interface AuthContainerProps {
   onLoginSuccess: () => void;
+  initialMode?: 'login' | 'register';
+  onBackToHome?: () => void;
 }
 
-export default function AuthContainer({ onLoginSuccess }: AuthContainerProps) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function AuthContainer({ onLoginSuccess, initialMode = 'login', onBackToHome }: AuthContainerProps) {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
+
+  useEffect(() => {
+    setIsLogin(initialMode === 'login');
+  }, [initialMode]);
+
+  const handleTabClick = (mode: 'login' | 'register') => {
+    navigate(`/${mode}`);
+  };
 
   return (
     <div className="auth-overlay">
       <div className="auth-container">
-
+        
         <div className="auth-header">
-          <div className="auth-logo">
-            {/* Using a simple text logo for now */}
-            <h1>D&D LORE</h1>
+          <div 
+            className="auth-logo clickable-logo"
+            onClick={onBackToHome || (() => navigate('/'))}
+          >
+            <img src={logoImg} alt="RP Hub Logo" className="auth-logo-img" />
           </div>
           <p className="auth-subtitle">
             {isLogin ? 'Welcome back, adventurer.' : 'Begin your journey.'}
@@ -26,13 +41,13 @@ export default function AuthContainer({ onLoginSuccess }: AuthContainerProps) {
         <div className="auth-tabs">
           <button
             className={`auth-tab ${isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(true)}
+            onClick={() => handleTabClick('login')}
           >
             Sign In
           </button>
           <button
             className={`auth-tab ${!isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(false)}
+            onClick={() => handleTabClick('register')}
           >
             Create Account
           </button>
