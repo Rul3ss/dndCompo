@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../../../lib/config';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -27,7 +28,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/user', {
+      const response = await fetch(`${API_BASE_URL}/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
