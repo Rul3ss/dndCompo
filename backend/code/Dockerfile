@@ -38,5 +38,5 @@ COPY --from=builder /app/dist ./dist
 # Expõe a porta da aplicação
 EXPOSE 3001
 
-# Comando de inicialização
-CMD ["node", "dist/main"]
+# Comando de inicialização personalizado para rodar migrations e depois o app
+CMD ["pnpm", "run", "start:railway"]
