@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import AuthContainer from './features/auth/components/AuthContainer'
 import Dashboard from './features/dashboard/components/Dashboard'
 import Navbar from './components/layout/Navbar'
@@ -7,10 +7,11 @@ import Hero from './features/landing/components/Hero'
 import AuthLayout from './features/auth/components/AuthLayout'
 import FeaturesSection from './features/landing/components/FeaturesSection'
 import FooterCTA from './features/landing/components/FooterCTA'
+import ProfileLayout from './features/profile/components/ProfileLayout'
 import './index.css'
 
 // Protected Route Component
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('access_token');
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -96,6 +97,13 @@ function AppContent() {
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard onLogout={handleLogout} />
+          </ProtectedRoute>
+        } />
+
+        {/* Rota Protegida (Perfil) */}
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfileLayout />
           </ProtectedRoute>
         } />
 
