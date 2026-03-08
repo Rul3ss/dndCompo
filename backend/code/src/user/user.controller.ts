@@ -43,7 +43,9 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('Nenhum arquivo enviado');
     }
-    const avatarUrl = `http://localhost:3001/public/avatars/${file.filename}`;
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const avatarUrl = `${protocol}://${host}/public/avatars/${file.filename}`;
     await this.userService.update(req.user.userId, { avatarUrl });
     return { avatarUrl };
   }
