@@ -76,6 +76,13 @@ body {
   text-shadow: 0 0 10px rgba(211, 47, 47, 0.3);
 }
 
+.auth-logo-img {
+  height: 80px; 
+  width: 280px;
+  object-fit: contain;
+  transform: scale(1.35);
+}
+
 .auth-subtitle {
   color: var(--text-muted);
   font-size: 0.95rem;
@@ -328,7 +335,7 @@ body {
   align-items: center;
   background-color: #1a1b1e;
   padding: 0 2rem;
-  height: 64px;
+  height: 60px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -348,13 +355,13 @@ body {
   align-items: center;
   cursor: pointer;
   user-select: none;
+  width: max-content; /* Impede que o container preencha espaços demais para os lados capturando cliques */
 }
 
 .navbar-logo-img {
-  height: 50px;
-  width: auto;
-  object-fit: contain;
-  /* border-radius: 50%; Optional: helps hide square borders if logo is circular */
+  height: 50px; 
+  width: auto; /* Deixando a largura acompanhar a altura sem esticar a caixa */
+  object-fit: contain; 
 }
 
 .nav-links {
@@ -618,7 +625,7 @@ body {
   position: relative;
   /* Use 100vh on root, discounting the navbar height if necessary but 
      overflow hidden on root prevents scrolling issues if we use 100vh directly without borders */
-  height: calc(100vh - 64px);
+  height: calc(100vh - 80px);
   width: 100%;
   background-color: #080c11;
   /* Deep space fallback */
@@ -628,26 +635,7 @@ body {
   /* prevents any pseudo-elements from stretching page */
 }
 
-/* 
-  The new epic background image running on a separate layer 
-  so we can animate its scale independently of the text
-*/
-.hero-bg {
-  position: absolute;
-  top: 0;
-  left: -5%;
-  right: -5%;
-  bottom: 0;
-  /* Extra width to allow panning */
-  width: 110%;
-  /* Makes image larger than container */
-  background-image: url('/hero-cyberpunk.png');
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-  /* changed to a dynamic pan and zoom for more intense movement */
-  animation: dynamicPan 40s ease-in-out infinite alternate;
-}
+
 
 /* 
   Let's add a subtle mist/particles effect using an overlay 
@@ -674,19 +662,7 @@ body {
   /* Let clicks pass through to content */
 }
 
-@keyframes dynamicPan {
-  0% {
-    transform: scale(1) translateX(0);
-  }
 
-  50% {
-    transform: scale(1.08) translateX(-2%);
-  }
-
-  100% {
-    transform: scale(1.03) translateX(2%);
-  }
-}
 
 @keyframes mistDrift {
   0% {
@@ -718,7 +694,7 @@ body {
   .hero-section {
     min-height: 550px;
     /* guarantees sufficient room for text on very small phones */
-    height: calc(100vh - 64px);
+    height: calc(100vh - 80px);
   }
 }
 
@@ -1494,4 +1470,52 @@ body {
 .btn-crop-cancel:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
+}
+
+/* Dashboard Tabs / Submenus */
+.dashboard-subheader {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 2rem;
+}
+
+.tab-item {
+  padding: 1rem 0;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tab-item:hover {
+  color: var(--text-white);
+}
+
+.tab-item.active {
+  color: var(--brand-primary);
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--brand-primary);
+  box-shadow: 0 0 10px rgba(211, 47, 47, 0.5);
+}
+

@@ -8,6 +8,7 @@
  *  4. Se o refresh também falhar, faz logout e redireciona para /login
  */
 
+import { API_BASE_URL } from './config';
 let isRefreshing = false;
 let refreshQueue: Array<(token: string) => void> = [];
 
@@ -15,7 +16,7 @@ async function runRefresh(): Promise<string | null> {
   const refreshToken = localStorage.getItem('refresh_token');
   if (!refreshToken) return null;
 
-  const response = await fetch('http://localhost:3001/auth/refresh', {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${refreshToken}`,
