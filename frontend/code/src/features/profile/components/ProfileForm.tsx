@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../lib/apiClient';
+import { API_BASE_URL } from '../../../lib/config';
 
 interface ProfileData {
   id: string;
@@ -31,7 +32,7 @@ export default function ProfileForm() {
     setError('');
 
     try {
-      const response = await apiClient('http://localhost:3001/user/me');
+      const response = await apiClient(`${API_BASE_URL}/user/me`);
       
       if (!response.ok) {
         throw new Error('Falha ao carregar o perfil');
@@ -59,7 +60,7 @@ export default function ProfileForm() {
     try {
       const payload: any = { name, bio, phone };
 
-      const response = await apiClient('http://localhost:3001/user/me', {
+      const response = await apiClient(`${API_BASE_URL}/user/me`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

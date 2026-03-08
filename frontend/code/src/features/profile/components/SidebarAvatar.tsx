@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../../../lib/apiClient';
+import { API_BASE_URL } from '../../../lib/config';
 import AvatarCropModal from './AvatarCropModal';
 
 export default function SidebarAvatar() {
@@ -15,7 +16,7 @@ export default function SidebarAvatar() {
 
   const fetchProfile = async () => {
     try {
-      const response = await apiClient('http://localhost:3001/user/me');
+      const response = await apiClient(`${API_BASE_URL}/user/me`);
       if (response.ok) {
         const data = await response.json();
         setAvatarUrl(data.avatarUrl || '');
@@ -47,7 +48,7 @@ export default function SidebarAvatar() {
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'avatar.jpg');
-      const avatarRes = await apiClient('http://localhost:3001/user/avatar', {
+      const avatarRes = await apiClient(`${API_BASE_URL}/user/avatar`, {
         method: 'POST',
         body: formData
       });

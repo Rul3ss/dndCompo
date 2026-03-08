@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import logoImg from "../../assets/logoNavbar.png";
 import { apiClient } from "../../lib/apiClient";
+import { API_BASE_URL } from "../../lib/config";
 
 interface NavbarProps {
   onSignInSelect?: () => void;
@@ -54,7 +55,7 @@ export default function Navbar({
 
   const loadUserProfile = async () => {
     try {
-      const response = await apiClient("http://localhost:3001/user/me");
+      const response = await apiClient(`${API_BASE_URL}/user/me`);
       if (response.ok) {
         const data = await response.json();
         setUserProfile(data);
@@ -66,7 +67,7 @@ export default function Navbar({
 
   const handleLogout = async () => {
     try {
-      await apiClient("http://localhost:3001/auth/logout", { method: "POST" });
+      await apiClient(`${API_BASE_URL}/auth/logout`, { method: "POST" });
     } catch (e) {
       console.error("Logout failed", e);
     } finally {

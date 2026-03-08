@@ -8,6 +8,7 @@ import AuthLayout from './features/auth/components/AuthLayout'
 import FeaturesSection from './features/landing/components/FeaturesSection'
 import FooterCTA from './features/landing/components/FooterCTA'
 import ProfileLayout from './features/profile/components/ProfileLayout'
+import { API_BASE_URL } from './lib/config';
 import './index.css'
 
 // Protected Route Component
@@ -27,7 +28,7 @@ function AppContent() {
     try {
       const token = localStorage.getItem('access_token');
       if (token) {
-        await fetch('http://localhost:3001/auth/logout', {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
