@@ -5,9 +5,10 @@ import CreateCharacterModal from './CreateCharacterModal';
 import { characterService, type Character } from '../../../lib/character.service';
 
 interface DashboardProps {
+  onLogout?: () => Promise<void>;
 }
 
-export default function Dashboard({ }: DashboardProps) {
+export default function Dashboard({ onLogout }: DashboardProps) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -40,7 +41,7 @@ export default function Dashboard({ }: DashboardProps) {
 
   return (
     <div className="dashboard-page" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#121212', color: '#fff' }}>
-      <Navbar />
+      <Navbar onLogout={onLogout} />
       
       <div className="dashboard-content" style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         <header style={{ marginBottom: '32px' }}>

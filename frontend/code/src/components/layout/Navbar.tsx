@@ -6,11 +6,13 @@ import { apiClient } from "../../lib/apiClient";
 interface NavbarProps {
   onSignInSelect?: () => void;
   onCreateAccountSelect?: () => void;
+  onLogout?: () => void;
 }
 
 export default function Navbar({
   onSignInSelect,
   onCreateAccountSelect,
+  onLogout,
 }: NavbarProps) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,7 +72,11 @@ export default function Navbar({
     } finally {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      navigate("/");
+      if (onLogout) {
+        onLogout();
+      } else {
+        navigate("/");
+      }
     }
   };
 
