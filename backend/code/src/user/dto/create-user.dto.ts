@@ -8,6 +8,7 @@ import {
 
 export class CreateUserDto {
   @IsString()
+  @Matches(/^[a-zA-ZÀ-ÿ\s]+$/, { message: 'O nome deve conter apenas letras' })
   @MaxLength(80, { message: 'O nome deve ter no máximo 80 caracteres' })
   name: string;
 
