@@ -82,7 +82,9 @@ export class CharacterController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('Nenhum arquivo enviado');
-    const imageUrl = `http://localhost:3001/public/characters/${file.filename}`;
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const imageUrl = `${protocol}://${host}/public/characters/${file.filename}`;
     return this.characterService.updateImage(id, req.user.userId, imageUrl);
   }
 }

@@ -108,7 +108,9 @@ export class CampaignController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('Nenhum arquivo enviado');
-    const imageUrl = `http://localhost:3001/public/campaigns/${file.filename}`;
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const imageUrl = `${protocol}://${host}/public/campaigns/${file.filename}`;
     return this.campaignService.updateImage(id, req.user.userId, imageUrl);
   }
 }
