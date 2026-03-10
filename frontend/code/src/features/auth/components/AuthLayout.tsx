@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Scroll, Users, Sword, Shield } from "lucide-react";
+import { Scroll } from "lucide-react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;

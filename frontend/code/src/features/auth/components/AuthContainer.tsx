@@ -11,7 +11,7 @@ interface AuthContainerProps {
   onBackToHome?: () => void;
 }
 
-export default function AuthContainer({ onLoginSuccess, initialMode = 'login', onBackToHome }: AuthContainerProps) {
+export default function AuthContainer({ onLoginSuccess, initialMode = 'login' }: AuthContainerProps) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
 
