@@ -1,18 +1,39 @@
-import { useEffect, useState } from 'react';
-import Navbar from '../../../components/layout/Navbar';
-import CharacterCard from './CharacterCard';
-import CreateCharacterModal from './CreateCharacterModal';
-import { characterService, type Character } from '../../../lib/character.service';
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Swords, Plus, ScrollText, BookOpen, Loader2 } from "lucide-react";
+import Navbar from "../../../components/layout/Navbar";
+import CharacterCard from "./CharacterCard";
+import CharacterModal from "./CharacterModal";
+import CharacterSheetModal from "./sheets/CharacterSheetModal";
+import {
+  characterService,
+  type Character,
+} from "../../../lib/character.service";
+import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../../../components/ui/ConfirmationModal";
 
 interface DashboardProps {
   onLogout?: () => Promise<void>;
 }
 
 export default function Dashboard({ onLogout }: DashboardProps) {
+  const navigate = useNavigate();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'characters' | 'campaigns'>('characters');
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(
+    null,
+  );
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
+    null,
+  );
+  const [isSheetOpen, setSheetOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"characters" | "campaigns">(
+    "characters",
+  );
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchCharacters = async () => {
     try {
@@ -20,108 +41,225 @@ export default function Dashboard({ onLogout }: DashboardProps) {
       const data = await characterService.getAllCharacters();
       setCharacters(data);
     } catch (e) {
-      console.error('Error fetching characters:', e);
+      console.error("Error fetching characters:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditProfile = (char: Character) => {
+    setEditingCharacter(char);
+    setModalOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    setEditingCharacter(null);
+    setModalOpen(true);
   };
 
   useEffect(() => {
     fetchCharacters();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setCharacterToDelete(id);
+    setIsConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!characterToDelete) return;
+    
     try {
-      await characterService.deleteCharacter(id);
-      setCharacters(prev => prev.filter(c => c.id !== id));
+      setIsDeleting(true);
+      await characterService.deleteCharacter(characterToDelete);
+      setCharacters((prev) => prev.filter((c) => c.id !== characterToDelete));
+      setIsConfirmDeleteOpen(false);
+      setCharacterToDelete(null);
     } catch (e) {
-      alert('Erro ao deletar personagem');
+      alert("Erro ao deletar personagem");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
+  const handleOpenSheet = (character: Character) => {
+    setSelectedCharacter(character);
+    setSheetOpen(true);
+  };
+
   return (
-    <div className="dashboard-page" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#121212', color: '#fff' }}>
-      <Navbar onLogout={onLogout} />
-      
-      <div className="dashboard-content" style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        <header style={{ marginBottom: '32px' }}>
-          <h1 className="dashboard-title" style={{ margin: 0, fontSize: '2.5rem', color: 'var(--brand-primary)', fontFamily: 'var(--font-serif)' }}>D&D LORE</h1>
-        </header>
+    <div className="min-h-screen bg-[#0c0a08] text-[#e8d5b0] font-inter">
+      <Navbar
+        onSignInSelect={() => navigate("/login")}
+        onCreateAccountSelect={() => navigate("/register")}
+        onLogout={onLogout}
+      />
 
-        <div className="dashboard-subheader">
-          <div className="dashboard-tabs">
-            <button 
-              className={`tab-item ${activeTab === 'characters' ? 'active' : ''}`}
-              onClick={() => setActiveTab('characters')}
-            >
-              Personagens
-            </button>
-            <button 
-              className={`tab-item ${activeTab === 'campaigns' ? 'active' : ''}`}
-              onClick={() => setActiveTab('campaigns')}
-            >
-              Campanhas
-            </button>
+      <main className="pt-[120px] pb-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Header & Tabs */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-2 text-[#c9a84c]/60 text-[10px] uppercase tracking-[0.3em] font-bold mb-2"
+              >
+                <div className="w-8 h-px bg-[#c9a84c]/30" />
+                Painel do Aventureiro
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="font-cinzel text-4xl md:text-5xl font-bold text-[#e8d5b0] tracking-tight"
+              >
+                Suas Crônicas
+              </motion.h1>
+            </div>
+
+            <div className="flex bg-[#1a1510]/60 backdrop-blur-md rounded-2xl p-1.5 border border-[#c9a84c]/10 shadow-lg self-start">
+              <button
+                onClick={() => setActiveTab("characters")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-cinzel text-xs font-bold tracking-widest transition-all ${
+                  activeTab === "characters"
+                    ? "bg-gradient-to-r from-[#c9a84c] to-[#a07830] text-[#0c0a08] shadow-lg shadow-[#c9a84c]/20"
+                    : "text-[#a89070] hover:text-[#e8d5b0]"
+                }`}
+              >
+                <ScrollText className="w-4 h-4" />
+                PERSONAGENS
+              </button>
+              <button
+                onClick={() => setActiveTab("campaigns")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-cinzel text-xs font-bold tracking-widest transition-all ${
+                  activeTab === "campaigns"
+                    ? "bg-gradient-to-r from-[#c9a84c] to-[#a07830] text-[#0c0a08] shadow-lg shadow-[#c9a84c]/20"
+                    : "text-[#a89070] hover:text-[#e8d5b0]"
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                CAMPANHAS
+              </button>
+            </div>
           </div>
 
-          {activeTab === 'characters' && (
-            <button 
-              className="btn-primary"
-              style={{ padding: '10px 20px', borderRadius: '4px', backgroundColor: '#4caf50', cursor: 'pointer', border: 'none', color: '#fff', fontWeight: 'bold' }}
-              onClick={() => setModalOpen(true)}
-            >
-              + Nova Ficha
-            </button>
-          )}
-        </div>
+          <div className="relative">
+            {activeTab === "characters" ? (
+              <AnimatePresence mode="wait">
+                {loading ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex flex-col items-center justify-center py-32"
+                  >
+                    <Loader2 className="w-12 h-12 text-[#c9a84c] animate-spin mb-4" />
+                    <p className="font-cinzel text-[#a89070] tracking-widest">
+                      INVOCANDO LENDAS...
+                    </p>
+                  </motion.div>
+                ) : characters.length === 0 ? (
+                  <motion.div
+                    key="empty"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col items-center justify-center py-32 bg-[#1a1510]/20 rounded-3xl border border-[#c9a84c]/10 border-dashed"
+                  >
+                    <div className="w-20 h-20 bg-[#c9a84c]/5 rounded-full flex items-center justify-center mb-6">
+                      <Plus className="w-10 h-10 text-[#c9a84c]/40" />
+                    </div>
+                    <h2 className="font-cinzel text-xl font-bold text-[#e8d5b0] mb-2">
+                      O REINO ESTÁ VAZIO
+                    </h2>
+                    <p className="text-[#a89070] text-sm mb-8 text-center max-w-sm">
+                      Parece que você ainda não forjou nenhum herói. Comece sua
+                      jornada agora mesmo.
+                    </p>
+                    <button
+                      onClick={handleCreateNew}
+                      className="py-3 px-8 bg-gradient-to-r from-[#c9a84c] to-[#a07830] rounded-xl text-[#0c0a08] font-cinzel text-xs font-bold tracking-widest shadow-xl hover:shadow-[#c9a84c]/10 transition-all active:scale-95"
+                    >
+                      FORJAR NOVO HERÓI
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="grid"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  >
+                    <motion.button
+                      whileHover={{ y: -5 }}
+                      onClick={handleCreateNew}
+                      className="group aspect-[3/4] sm:aspect-auto flex flex-col items-center justify-center gap-4 bg-[#1a1510]/20 border-2 border-dashed border-[#c9a84c]/20 rounded-2xl hover:border-[#c9a84c]/50 transition-all duration-300 min-h-[300px]"
+                    >
+                      <div className="w-12 h-12 bg-[#c9a84c]/5 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus className="w-6 h-6 text-[#c9a84c]" />
+                      </div>
+                      <span className="font-cinzel text-xs font-bold text-[#c9a84c]/60 group-hover:text-[#c9a84c] tracking-widest">
+                        NOVA FICHA
+                      </span>
+                    </motion.button>
 
-        {activeTab === 'characters' ? (
-          <>
-            {loading ? (
-              <p>Carregando as lendas...</p>
-            ) : characters.length === 0 ? (
-              <div className="empty-state" style={{ textAlign: 'center', padding: '64px', backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px dashed #444' }}>
-                <h2>Nenhuma ficha encontrada</h2>
-                <p style={{ color: '#aaa', marginBottom: '24px' }}>Parece que você ainda não iniciou sua jornada. Crie um personagem para começar!</p>
-                <button 
-                  className="btn-primary"
-                  style={{ padding: '8px 16px', borderRadius: '4px', backgroundColor: '#4caf50' }}
-                  onClick={() => setModalOpen(true)}
-                >
-                  Forjar Novo Personagem
-                </button>
-              </div>
+                    {characters.map((char) => (
+                      <CharacterCard
+                        key={char.id}
+                        character={char}
+                        onOpenSheet={() => handleOpenSheet(char)}
+                        onEditProfile={() => handleEditProfile(char)}
+                        onDelete={() => handleDeleteClick(char.id)}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             ) : (
-              <div className="characters-grid" style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                gap: '24px'
-              }}>
-                {characters.map(char => (
-                  <CharacterCard key={char.id} character={char} onDelete={handleDelete} />
-                ))}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col items-center justify-center py-32 bg-[#1a1510]/20 rounded-3xl border border-[#c9a84c]/10"
+              >
+                <div className="w-16 h-16 bg-[#c9a84c]/5 rounded-full flex items-center justify-center mb-6">
+                  <Swords className="w-8 h-8 text-[#c9a84c]/40" />
+                </div>
+                <h2 className="font-cinzel text-xl font-bold text-[#e8d5b0] mb-2">
+                  CAMPANHAS EM BREVE
+                </h2>
+                <p className="text-[#a89070] text-sm text-center max-w-sm">
+                  Estamos preparando os mapas e as masmorras para suas próximas
+                  grandes aventuras.
+                </p>
+              </motion.div>
             )}
-          </>
-        ) : (
-          <div className="empty-state" style={{ textAlign: 'center', padding: '64px', backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px dashed #444' }}>
-            <h2>Minhas Campanhas</h2>
-            <p style={{ color: '#aaa', marginBottom: '24px' }}>Funcionalidade em desenvolvimento. Em breve você poderá gerenciar suas aventuras épicas!</p>
-            <button 
-              className="btn-primary"
-              style={{ padding: '8px 16px', borderRadius: '4px', backgroundColor: '#666', cursor: 'not-allowed' }}
-              disabled
-            >
-              Em breve
-            </button>
           </div>
-        )}
-      </div>
+        </div>
+      </main>
 
-      <CreateCharacterModal 
-        isOpen={isModalOpen} 
-        onClose={() => setModalOpen(false)} 
-        onSuccess={fetchCharacters} 
+      <CharacterModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={fetchCharacters}
+        character={editingCharacter}
+      />
+
+      <CharacterSheetModal
+        character={selectedCharacter}
+        isOpen={isSheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onUpdate={fetchCharacters}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmDeleteOpen}
+        title="Apagar Lenda"
+        message="Deseja realmente apagar esta lenda das crônicas? Esta ação é permanente e não poderá ser desfeita."
+        confirmLabel={isDeleting ? "Apagando..." : "Apagar Lenda"}
+        cancelLabel="Manter Lenda"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsConfirmDeleteOpen(false)}
+        variant="danger"
       />
     </div>
   );

@@ -19,8 +19,9 @@ async function runRefresh(): Promise<string | null> {
   const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${refreshToken}`,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ refresh_token: refreshToken }),
   });
 
   if (!response.ok) return null;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import logoImg from "../../assets/logoNavbar.png";
+import { motion, AnimatePresence } from "framer-motion";
+import { Scroll, Menu, X, Search, User, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { API_BASE_URL } from "../../lib/config";
 
@@ -16,6 +17,7 @@ export default function Navbar({
   onLogout,
 }: NavbarProps) {
   const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<{
@@ -26,31 +28,32 @@ export default function Navbar({
   const isAuthenticated = !!localStorage.getItem("access_token");
 
   useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
     if (isAuthenticated) {
       loadUserProfile();
     }
+    return () => window.removeEventListener("scroll", onScroll);
   }, [isAuthenticated]);
 
-  // Escuta o evento global de avatar atualizado (disparado pelo SidebarAvatar)
+  // Event listeners para atualização de avatar e perfil
   useEffect(() => {
     const handleAvatarUpdated = (e: Event) => {
       const { avatarUrl } = (e as CustomEvent).detail;
       setUserProfile((prev) => (prev ? { ...prev, avatarUrl } : null));
     };
-    window.addEventListener("avatarUpdated", handleAvatarUpdated);
-    return () =>
-      window.removeEventListener("avatarUpdated", handleAvatarUpdated);
-  }, []);
-
-  // Escuta o evento global de perfil atualizado (disparado pelo ProfileForm)
-  useEffect(() => {
     const handleProfileUpdated = (e: Event) => {
       const { name } = (e as CustomEvent).detail;
       setUserProfile((prev) => (prev ? { ...prev, name } : null));
     };
+    
+    window.addEventListener("avatarUpdated", handleAvatarUpdated);
     window.addEventListener("profileUpdated", handleProfileUpdated);
-    return () =>
+    
+    return () => {
+      window.removeEventListener("avatarUpdated", handleAvatarUpdated);
       window.removeEventListener("profileUpdated", handleProfileUpdated);
+    };
   }, []);
 
   const loadUserProfile = async () => {
@@ -81,292 +84,228 @@ export default function Navbar({
     }
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const navLinks = [
+    { label: "Recursos", href: "/#features", id: "features" },
+    { label: "Preview", href: "/#preview", id: "preview" },
+    { label: "Planos", href: "/#cta", id: "cta" },
+  ];
 
   return (
-    <>
-      <nav className="dnd-navbar">
-        <div className="navbar-left">
-          <div className="navbar-logo" onClick={() => navigate("/")}>
-            <img src={logoImg} alt="RP Hub Logo" className="navbar-logo-img" />
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-[#0c0a08]/90 backdrop-blur-md border-b border-[#c9a84c]/20 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between h-[72px]">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5 group select-none">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#c9a84c] to-[#8b5e0a] flex items-center justify-center shadow-[0_0_12px_rgba(201,168,76,0.4)] transition-transform group-hover:scale-110">
+            <Scroll className="w-5 h-5 text-[#0c0a08]" />
           </div>
+          <span
+            className="text-[#e8d5b0] group-hover:text-[#c9a84c] transition-colors duration-300 font-cinzel text-xl tracking-wider font-bold"
+          >
+            RP <span className="text-[#c9a84c]">Hub</span>
+          </span>
+        </Link>
 
-          <ul className="nav-links hide-mobile">
-            {isAuthenticated && (
-              <li>
-                <Link to="/dashboard">DASHBOARD</Link>
-              </li>
-            )}
-            <li>
-              <Link to="/features">FEATURES</Link>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="disabled-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                LIBRARY <span className="soon-badge">em breve</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="disabled-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                COMMUNITY <span className="soon-badge">em breve</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="disabled-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                MARKETPLACE <span className="soon-badge">em breve</span>
-              </a>
-            </li>
-          </ul>
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-8">
+          {isAuthenticated && (
+            <Link
+              to="/dashboard"
+              className="text-[#c9a84c] hover:text-[#e8d5b0] transition-colors duration-300 text-sm font-cinzel font-bold tracking-widest flex items-center gap-2"
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              DASHBOARD
+            </Link>
+          )}
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="text-[#a89070] hover:text-[#c9a84c] transition-colors duration-300 text-sm font-inter font-medium"
+            >
+              {link.label}
+            </a>
+          ))}
+          <span className="text-[#6c707a] text-[10px] font-bold uppercase tracking-tighter opacity-50 font-inter cursor-not-allowed">
+            Livraria <span className="text-[8px] border border-[#6c707a]/30 px-1 rounded ml-1">Breve</span>
+          </span>
         </div>
 
-        <div className="navbar-right">
-          <button className="icon-btn search-btn" aria-label="Search">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+        {/* Right Side Actions */}
+        <div className="hidden md:flex items-center gap-5">
+          <button className="text-[#a89070] hover:text-[#c9a84c] transition-all duration-300" aria-label="Search">
+            <Search className="w-5 h-5" />
           </button>
 
           {isAuthenticated ? (
-            <div className="user-menu-container">
+            <div className="relative">
               <button
-                className="user-profile-trigger"
+                className="flex items-center gap-2 group"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                {userProfile?.avatarUrl ? (
-                  <img
-                    src={userProfile.avatarUrl}
-                    alt="User Avatar"
-                    className="navbar-avatar"
-                  />
-                ) : (
-                  <div className="navbar-avatar-placeholder">
-                    {userProfile?.name?.charAt(0).toUpperCase() || "U"}
-                  </div>
-                )}
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-[#c9a84c]/20 group-hover:border-[#c9a84c]/50 transition-colors">
+                  {userProfile?.avatarUrl ? (
+                    <img
+                      src={userProfile.avatarUrl}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#c9a84c] to-[#a07830] flex items-center justify-center text-[#0c0a08] font-bold">
+                      {userProfile?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  )}
+                </div>
               </button>
 
-              {isDropdownOpen && (
-                <div className="user-dropdown-menu">
-                  <div className="user-dropdown-header">
-                    <strong>{userProfile?.name || "User"}</strong>
-                  </div>
-                  <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
-                    Meu Perfil
-                  </Link>
-                  <hr />
-                  <button onClick={handleLogout} className="logout-btn">
-                    Sair
-                  </button>
-                </div>
-              )}
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-[calc(100%+12px)] right-0 w-56 bg-[#0c0a08]/95 backdrop-blur-xl border border-[#c9a84c]/20 rounded-xl py-2 shadow-[0_10px_40px_rgba(0,0,0,0.6)] z-[60]"
+                  >
+                    <div className="px-4 py-3 border-b border-[#c9a84c]/10 mb-1">
+                      <p className="text-[#e8d5b0] text-sm font-cinzel font-bold truncate">
+                        {userProfile?.name || "Aventureiro"}
+                      </p>
+                      <p className="text-[#7a6a55] text-[10px] uppercase tracking-widest font-inter">Herói do Reino</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigate("/profile");
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-[#a89070] hover:text-[#e8d5b0] hover:bg-[#c9a84c]/10 transition-all flex items-center gap-3 text-sm font-inter"
+                    >
+                      <UserCircle className="w-4 h-4" />
+                      Meu Perfil
+                    </button>
+                    <div className="h-px bg-[#c9a84c]/10 my-1 mx-2" />
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2.5 text-red-400/80 hover:text-red-400 hover:bg-red-400/10 transition-all flex items-center gap-3 text-sm font-inter"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sair do Reino
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
-            <>
-              {onSignInSelect && (
-                <button
-                  className="nav-signin-btn"
-                  onClick={onSignInSelect}
-                  aria-label="Sign In"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  <span className="hide-mobile">Sign in</span>
-                </button>
-              )}
-
-              {onCreateAccountSelect && (
-                <button
-                  className="nav-create-btn hide-mobile"
-                  onClick={onCreateAccountSelect}
-                >
-                  CREATE ACCOUNT
-                </button>
-              )}
-            </>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onSignInSelect}
+                className="text-[#a89070] hover:text-[#e8d5b0] transition-colors duration-300 text-sm font-inter px-3 py-2 flex items-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Entrar
+              </button>
+              <button
+                onClick={onCreateAccountSelect}
+                className="px-5 py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#a07830] text-[#0c0a08] rounded-lg text-xs font-cinzel font-bold tracking-widest hover:brightness-110 transition-all duration-300 shadow-[0_0_15px_rgba(201,168,76,0.3)]"
+              >
+                CRIAR CONTA
+              </button>
+            </div>
           )}
-
-          <button
-            className="icon-btn mobile-menu-btn hide-desktop"
-            aria-label="Menu"
-            onClick={toggleMobileMenu}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Sidebar Overlay */}
-      <div
-        className={`mobile-sidebar-overlay ${isMobileMenuOpen ? "open" : ""}`}
-        onClick={toggleMobileMenu}
-      ></div>
-      <div className={`mobile-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
-        <div className="mobile-sidebar-header">
-          <div
-            className="navbar-logo"
-            onClick={() => {
-              toggleMobileMenu();
-              navigate("/");
-            }}
-          >
-            <img src={logoImg} alt="RP Hub Logo" className="navbar-logo-img" />
-          </div>
-          <button
-            className="icon-btn close-sidebar-btn"
-            onClick={toggleMobileMenu}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
         </div>
 
-        <ul className="mobile-nav-links">
-          {isAuthenticated && (
-            <>
-              <li>
-                <Link to="/dashboard" onClick={toggleMobileMenu}>
-                  DASHBOARD
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" onClick={toggleMobileMenu}>
-                  MEU PERFIL
-                </Link>
-              </li>
-            </>
-          )}
-          <li>
-            <Link to="/features" onClick={toggleMobileMenu}>
-              FEATURES <span className="mobile-chevron"></span>
-            </Link>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="disabled-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              LIBRARY <span className="soon-badge">em breve</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="disabled-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              COMMUNITY <span className="soon-badge">em breve</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="disabled-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              MARKETPLACE <span className="soon-badge">em breve</span>
-            </a>
-          </li>
-        </ul>
-
-        {!isAuthenticated && (
-          <div className="mobile-sidebar-footer">
-            {onCreateAccountSelect && (
-              <button
-                className="btn-secondary cta-mobile-btn"
-                onClick={() => {
-                  toggleMobileMenu();
-                  onCreateAccountSelect();
-                }}
-              >
-                CREATE AN ACCOUNT <span className="arrow">→</span>
-              </button>
-            )}
-            {onSignInSelect && (
-              <button
-                className="btn-primary signin-mobile-btn"
-                onClick={() => {
-                  toggleMobileMenu();
-                  onSignInSelect();
-                }}
-              >
-                SIGN IN
-              </button>
-            )}
-          </div>
-        )}
-        {isAuthenticated && (
-          <div className="mobile-sidebar-footer">
-            <button
-              className="btn-secondary cta-mobile-btn"
-              onClick={() => {
-                toggleMobileMenu();
-                handleLogout();
-              }}
-            >
-              SAIR
-            </button>
-          </div>
-        )}
+        {/* Mobile Menu Toggle */}
+        <button
+          className="md:hidden text-[#a89070] hover:text-[#c9a84c] transition-colors p-2"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
-    </>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-[#0c0a08]/fa backdrop-blur-xl border-t border-[#c9a84c]/20 px-6 py-6 flex flex-col gap-5"
+          >
+             {isAuthenticated && (
+              <Link
+                to="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-[#c9a84c] font-cinzel font-bold py-3 border-b border-[#c9a84c]/10 flex items-center justify-between"
+              >
+                DASHBOARD <LayoutDashboard className="w-4 h-4" />
+              </Link>
+            )}
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="text-[#a89070] hover:text-[#c9a84c] transition-colors text-sm font-inter font-medium py-1"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
+            {!isAuthenticated ? (
+              <div className="flex flex-col gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onSignInSelect?.();
+                  }}
+                  className="w-full py-3 text-[#a89070] border border-[#c9a84c]/20 rounded-lg font-cinzel text-xs tracking-widest"
+                >
+                  ENTRAR
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onCreateAccountSelect?.();
+                  }}
+                  className="w-full py-3 bg-gradient-to-r from-[#c9a84c] to-[#a07830] text-[#0c0a08] rounded-lg font-cinzel font-bold text-xs tracking-widest"
+                >
+                  CRIAR CONTA GRÁTIS
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                  className="w-full py-3 text-[#a89070] border border-[#c9a84c]/20 rounded-lg font-cinzel text-xs tracking-widest flex items-center justify-center gap-2"
+                >
+                  <UserCircle className="w-4 h-4" /> MEU PERFIL
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full py-3 bg-red-400/10 text-red-400 border border-red-400/20 rounded-lg font-cinzel font-bold text-xs tracking-widest flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" /> SAIR DO REINO
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 }
+

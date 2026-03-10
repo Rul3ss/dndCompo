@@ -2,14 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import AuthContainer from './features/auth/components/AuthContainer'
 import Dashboard from './features/dashboard/components/Dashboard'
-import Navbar from './components/layout/Navbar'
-import Hero from './features/landing/components/Hero'
 import AuthLayout from './features/auth/components/AuthLayout'
-import FeaturesSection from './features/landing/components/FeaturesSection'
-import FooterCTA from './features/landing/components/FooterCTA'
 import ProfileLayout from './features/profile/components/ProfileLayout'
 import { API_BASE_URL } from './lib/config';
 import './index.css'
+import LandingPage from './features/landing/pages/LandingPage'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -46,32 +43,12 @@ function AppContent() {
 
   return (
     <div className="app-layout">
-      {/* O Navbar será renderizado em rotas específicas dentro de suas views, 
-          ou podemos fixá-lo aqui fora e esconder na rota de Auth */}
-      
       <Routes>
-        {/* Rota Raiz (Landing Page) */}
-        <Route path="/" element={
-          <div className="landing-page">
-            <Navbar 
-              onSignInSelect={() => navigate('/login')}
-              onCreateAccountSelect={() => navigate('/register')}
-            />
-            <Hero onCreateClick={() => navigate('/register')} />
-          </div>
-        } />
-
-        {/* Rota de Features */}
-        <Route path="/features" element={
-          <div className="features-page">
-            <Navbar 
-              onSignInSelect={() => navigate('/login')}
-              onCreateAccountSelect={() => navigate('/register')}
-            />
-            <FeaturesSection />
-            <FooterCTA />
-          </div>
-        } />
+        {/* Rota Raiz (Landing Page Centralizada) */}
+        <Route path="/" element={<LandingPage />} />
+        
+        {/* Rota de Features (Agora parte da Landing Page unificada) */}
+        <Route path="/features" element={<LandingPage />} />
 
         {/* Rotas de Autenticação */}
         <Route path="/login" element={

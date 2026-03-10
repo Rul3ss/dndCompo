@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Importa todas as imagens da pasta assets/homepage como suas URLs resultantes
-const imageModules = import.meta.glob('../../../assets/homepage/*.jpg', { eager: true, query: '?url', import: 'default' });
+// Importa todas as imagens da pasta assets/animation/landingPage como suas URLs resultantes
+const imageModules = import.meta.glob('../../../assets/animation/landingPage/*.jpg', { eager: true, query: '?url', import: 'default' });
 
 // Extrai as URLs na ordem correta
 const imageUrls: string[] = Object.values(imageModules).map(mod => mod as string);
@@ -114,17 +114,33 @@ export default function AnimatedBackground() {
 
   // Se as imagens não carregaram, mantém um fundo preto ou o canvas vazio.
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 0,
-        pointerEvents: 'none'
-      }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -1,
+          pointerEvents: 'none',
+          objectFit: 'cover'
+        }}
+      />
+      {/* Overlay para garantir contraste do texto */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 0,
+          background: 'radial-gradient(circle at center, rgba(15, 17, 21, 0.4) 0%, rgba(15, 17, 21, 0.8) 100%)',
+          pointerEvents: 'none'
+        }}
+      />
+    </>
   );
 }
