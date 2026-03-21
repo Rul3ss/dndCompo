@@ -24,7 +24,6 @@ import {
   ChevronUp,
   ChevronDown,
   Check,
-  Globe,
   Swords,
   Loader2,
 } from "lucide-react";
