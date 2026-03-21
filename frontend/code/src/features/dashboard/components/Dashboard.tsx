@@ -14,21 +14,10 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  Sword,
-  Wand2,
-  Shield,
-  Target,
-  Flame,
-  Leaf,
-  Star,
   Zap,
-  Calendar,
-  Clock,
   TrendingUp,
-  Award,
   Dices,
   Menu,
-  X,
   Globe,
   LogOut,
   User,
@@ -1006,7 +995,7 @@ function OverviewView({
             ) : (
               characters
                 .slice(0, 2)
-                .map((char, i) => (
+                .map((char) => (
                   <CharacterCard
                     key={char.id}
                     character={char}
@@ -1618,9 +1607,7 @@ export default function NewDashboard({ onLogout }: DashboardProps) {
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(
     null,
   );
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
-    null,
-  );
+  const [selectedCharacter] = useState<Character | null>(null);
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<string | null>(
