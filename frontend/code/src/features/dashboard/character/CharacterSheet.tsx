@@ -27,10 +27,7 @@ import {
   Swords,
   Loader2,
 } from "lucide-react";
-import {
-  characterService,
-  type Character,
-} from "../../../lib/character.service";
+import { characterService } from "../../../lib/character.service";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
