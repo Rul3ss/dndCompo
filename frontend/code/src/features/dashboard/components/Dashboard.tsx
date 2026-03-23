@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Zap,
   TrendingUp,
-  Dices,
   Menu,
   Globe,
   LogOut,
@@ -31,6 +30,7 @@ import {
   Swords,
   ArrowUpRight,
 } from "lucide-react";
+import { DiceRoller } from "../character/dnd/components/DiceRoller";
 import CharacterCard from "./CharacterCard";
 import CharacterModal from "./CharacterModal";
 import CharacterSheetModal from "./sheets/CharacterSheetModal";
@@ -686,146 +686,7 @@ function StatCard({
 
 // ─── DICE ROLLER ────────────────────────────────────────────────────────────────
 
-function DiceRoller() {
-  const [rolling, setRolling] = useState(false);
-  const [result, setResult] = useState<number | null>(null);
-  const [dieType, setDieType] = useState(20);
-  const dice = [4, 6, 8, 10, 12, 20, 100];
-
-  function roll() {
-    if (rolling) return;
-    setRolling(true);
-    setResult(null);
-    const spins = 12;
-    let i = 0;
-    const interval = setInterval(() => {
-      setResult(Math.ceil(Math.random() * dieType));
-      i++;
-      if (i >= spins) {
-        clearInterval(interval);
-        setRolling(false);
-      }
-    }, 80);
-  }
-
-  const isCrit = result === dieType;
-  const isFumble = result === 1;
-
-  return (
-    <div
-      className="rounded-xl border border-[#2a1f0f] p-5"
-      style={{ background: "#140f0a" }}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <h3
-          className="text-[#e8d5b0] text-sm"
-          style={{ fontFamily: "'Cinzel', serif", fontWeight: 600 }}
-        >
-          Rolagem Rápida
-        </h3>
-        <Dices className="w-4 h-4 text-[#4a3820]" />
-      </div>
-
-      {/* Die selector */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {dice.map((d) => (
-          <button
-            key={d}
-            onClick={() => {
-              setDieType(d);
-              setResult(null);
-            }}
-            className={`px-2.5 py-1 rounded text-xs transition-all duration-200 ${dieType === d ? "bg-[#c9a84c]/20 border border-[#c9a84c]/40 text-[#c9a84c]" : "border border-[#2a1f0f] text-[#6b5a3e] hover:border-[#3d2e1a] hover:text-[#a89070]"}`}
-            style={{ fontFamily: "'Cinzel', serif" }}
-          >
-            d{d}
-          </button>
-        ))}
-      </div>
-
-      {/* Result display */}
-      <div className="flex items-center gap-4">
-        <motion.button
-          onClick={roll}
-          whileTap={{ scale: 0.9 }}
-          animate={rolling ? { rotate: [0, 20, -20, 15, -15, 0] } : {}}
-          transition={{ duration: 0.5 }}
-          className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
-          style={{
-            background: "linear-gradient(135deg, #1a1510, #2a1f0f)",
-            border: "2px solid #3d2e1a",
-          }}
-          title={`Rolar d${dieType}`}
-        >
-          🎲
-        </motion.button>
-        <div className="flex-1">
-          <AnimatePresence mode="wait">
-            {result !== null ? (
-              <motion.div
-                key={result}
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.5, opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                <p
-                  className="text-4xl"
-                  style={{
-                    fontFamily: "'Cinzel', serif",
-                    fontWeight: 900,
-                    color: isCrit
-                      ? "#22c55e"
-                      : isFumble
-                        ? "#ef4444"
-                        : "#c9a84c",
-                    textShadow: isCrit
-                      ? "0 0 20px rgba(34,197,94,0.5)"
-                      : isFumble
-                        ? "0 0 20px rgba(239,68,68,0.5)"
-                        : "0 0 20px rgba(201,168,76,0.3)",
-                  }}
-                >
-                  {result}
-                </p>
-                <p
-                  className="text-xs mt-0.5"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    color: isCrit
-                      ? "#22c55e"
-                      : isFumble
-                        ? "#ef4444"
-                        : "#6b5a3e",
-                  }}
-                >
-                  {isCrit
-                    ? "✦ Crítico!"
-                    : isFumble
-                      ? "✦ Falha!"
-                      : `d${dieType}`}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <p
-                  className="text-[#3d2e1a] text-sm"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
-                >
-                  Clique no dado para rolar d{dieType}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
-  );
-}
+// DiceRoller is now imported as a shared component
 
 // ─── OVERVIEW VIEW ──────────────────────────────────────────────────────────────
 
