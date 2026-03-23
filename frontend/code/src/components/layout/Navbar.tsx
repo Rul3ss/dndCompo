@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Scroll, Menu, X, Search, User, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
+import { Scroll, Menu, X, Search, User, LogOut, LayoutDashboard, UserCircle, Globe } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { API_BASE_URL } from "../../lib/config";
+import { useTranslation } from "react-i18next";
 
 interface NavbarProps {
   onSignInSelect?: () => void;
@@ -24,6 +25,13 @@ export default function Navbar({
     name: string;
     avatarUrl?: string;
   } | null>(null);
+
+  const { i18n } = useTranslation();
+
+  const handleLanguageToggle = () => {
+    const newLang = i18n.language.startsWith('pt') ? 'en' : 'pt';
+    i18n.changeLanguage(newLang);
+  };
 
   const isAuthenticated = !!localStorage.getItem("access_token");
 
@@ -141,6 +149,15 @@ export default function Navbar({
 
         {/* Right Side Actions */}
         <div className="hidden md:flex items-center gap-5">
+          <button 
+            onClick={handleLanguageToggle}
+            className="flex items-center gap-1.5 text-[#a89070] hover:text-[#c9a84c] transition-all duration-300 font-cinzel text-xs tracking-wider font-bold"
+            aria-label="Toggle Language"
+          >
+            <Globe className="w-4 h-4" />
+            {i18n.language.startsWith('pt') ? 'PT' : 'EN'}
+          </button>
+
           <button className="text-[#a89070] hover:text-[#c9a84c] transition-all duration-300" aria-label="Search">
             <Search className="w-5 h-5" />
           </button>
@@ -222,13 +239,23 @@ export default function Navbar({
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-[#a89070] hover:text-[#c9a84c] transition-colors p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Mobile Menu Toggle & Language */}
+        <div className="flex items-center gap-3 md:hidden">
+          <button 
+            onClick={handleLanguageToggle}
+            className="flex items-center gap-1 text-[#a89070] hover:text-[#c9a84c] transition-all duration-300 font-cinzel text-xs font-bold"
+          >
+            <Globe className="w-4 h-4" />
+            {i18n.language.startsWith('pt') ? 'PT' : 'EN'}
+          </button>
+
+          <button
+            className="text-[#a89070] hover:text-[#c9a84c] transition-colors p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}

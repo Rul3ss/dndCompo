@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import AuthContainer from "./features/auth/components/AuthContainer";
 import Dashboard from "./features/dashboard/components/Dashboard";
-import CharacterSheet from "./features/dashboard/character";
+import CharacterSheet from "./features/dashboard/character/dnd";
 import AuthLayout from "./features/auth/components/AuthLayout";
 import ProfileLayout from "./features/profile/components/ProfileLayout";
 import { API_BASE_URL } from "./lib/config";
